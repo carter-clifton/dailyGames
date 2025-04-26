@@ -1,0 +1,23 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#games {
+    flex: 1;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.game-card .btn {
+    width: auto;
+    align-self: start;
+}
