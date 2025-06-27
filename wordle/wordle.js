@@ -1,4 +1,4 @@
-import { wordList } from "./worldeList.js";
+import { wordList } from "./wordldeList.js";
 
 const maxAttempts = 6;
 const numLetters = 5;
