@@ -1,5 +1,3 @@
-import { wordList } from "./wordleList.js";
-
 const maxAttempts = 6;
 const numLetters = 5;
 const resultsModal = new bootstrap.Modal(document.getElementById("results"));
@@ -17,6 +15,7 @@ let currentGuess = "";
 let guessHistory = Array(maxAttempts).fill(null).map(() => Array(numLetters).fill(null));
 
 const grid = document.getElementById("grid");
+
 
 document.addEventListener('DOMContentLoaded', function () {
     statsButton.addEventListener("click", function() {
@@ -41,9 +40,13 @@ for (let i = 0; i < maxAttempts; i++) {
     grid.appendChild(row);
 }
 
-const legalLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+const legalLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "-", "_", "+", "=", "[", "]", "{", "}", "|", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/"];
 
 const keyboardLayout = [
+    [":", ";", "'", '"', "<", ">", ",", ".", "?", "/"],
+    ["~", "-", "_", "+", "=", "[", "]", "{", "}", "|"],
+    ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")"],
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
     ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
     ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
     ["Enter", "z", "x", "c", "v", "b", "n", "m", "←"]
@@ -63,26 +66,24 @@ keyboardLayout.forEach((rowKeys, rowIndex) => {
 });
 
 function getTodaysWord(randomString = new Date().toDateString()) {
-    // let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+    let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "-", "_", "+", "=", "[", "]", "{", "}", "|", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/"]
     let rSeed = hashCode(randomString);
-    // let rWord = Array(numLetters);
+    let rWord = Array(numLetters);
     if (rSeed < 0) {
         rSeed *= -1;
     }
-    // for (let i = 0; i < numLetters; i++) {
-    let digit = Math.floor(seededRandom(rSeed, 2308)());
-    if (digit === 2309) {
-        digit -= 1;
+    for (let i = 0; i < numLetters; i++) {
+        let digit = Math.floor(seededRandom(rSeed, 66)());
+        if (digit === 67) {
+            digit -= 1;
+        }
+        rWord[i] = digit;
+        rSeed *= 7547;
     }
-    // rWord[i] = digit;
-    // rSeed *= 7547;
-
-    let word = wordList[digit]
-    // }
-    // let word = "";
-    // for (let i = 0; i < numLetters; i++) {
-    //     word += letters[rWord[i]];
-    // }
+    let word = "";
+    for (let i = 0; i < numLetters; i++) {
+        word += letters[rWord[i]];
+    }
     return word;
 }
 
@@ -136,7 +137,8 @@ function handleKey(key) {
             submitGuess();
         }
         return;
-    } else if (currentGuess.length < numLetters && /^[a-z]$/i.test(key)) {
+    // } else if (currentGuess.length < numLetters && /^[a-z]$/i.test(key)) {
+    } else if (currentGuess.length < numLetters) {
         currentGuess += key;
     }
 
@@ -160,10 +162,18 @@ function submitGuess() {
 
     for (let i = 0; i < numLetters; i++) {
         const cell = row.children[i];
+        let indexer = cell.innerHTML;
+        if (indexer == "&amp;") {
+            indexer = "&";
+        } else if (indexer == "&lt;") {
+            indexer = "<";
+        } else if (indexer == "&gt;") {
+            indexer = ">";
+        }
         if (guessLetters[i] === secret[i]) {
             cell.classList.add("correct");
             guessHistory[currentRow][i] = "🟩";
-            let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+            let keyboardKey = document.getElementById(`${indexer}Key`);
             keyboardKey.classList.add("green");
             secret[i] = null;
             guessLetters[i] = null;
@@ -172,19 +182,27 @@ function submitGuess() {
     
     for (let i = 0; i < numLetters; i++) {
         const cell = row.children[i];
-        console.log(cell.innerHTML);
+        let indexer = cell.innerHTML;
+        if (indexer == "&amp;") {
+            indexer = "&";
+        } else if (indexer == "&lt;") {
+            indexer = "<";
+        } else if (indexer == "&gt;") {
+            indexer = ">";
+        }
+        // console.log(cell.innerHTML);
         if (guessLetters[i]) {
             const index = secret.indexOf(guessLetters[i]);
             if (index !== -1) {
                 cell.classList.add("present");
                 guessHistory[currentRow][i] = "🟨";
                 secret[index] = null;
-                let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+                let keyboardKey = document.getElementById(`${indexer}Key`);
                 keyboardKey.classList.add("yellow");
             } else {
                 cell.classList.add("absent");
                 guessHistory[currentRow][i] = "⬛";
-                let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+                let keyboardKey = document.getElementById(`${indexer}Key`);
                 keyboardKey.classList.add("gray");
             }
         }
@@ -224,7 +242,7 @@ function showResults() {
 function copyResults() {
     if (gameState == "win" || gameState == "fail") {
         let textToCopy = "";
-        textToCopy += `Wordle* #${daysSinceStart()}\n`
+        textToCopy += `Hardle #${daysSinceStart()}\n`
         if (gameState == "win") {
             textToCopy += `${currentRow + 1} / 6 Guesses`;
         } else {
