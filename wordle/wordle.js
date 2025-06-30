@@ -17,7 +17,6 @@ let currentGuess = "";
 let guessHistory = Array(maxAttempts).fill(null).map(() => Array(numLetters).fill(null));
 
 const grid = document.getElementById("grid");
-const message = document.getElementById("message");
 
 document.addEventListener('DOMContentLoaded', function () {
     statsButton.addEventListener("click", function() {
@@ -78,7 +77,7 @@ function getTodaysWord(randomString = new Date().toDateString()) {
     // rWord[i] = digit;
     // rSeed *= 7547;
 
-    word = wordList[digit]
+    let word = wordList[digit]
     // }
     // let word = "";
     // for (let i = 0; i < numLetters; i++) {
@@ -135,8 +134,6 @@ function handleKey(key) {
     } else if (key === "Enter") {
         if (currentGuess.length === numLetters) {
             submitGuess();
-        } else {
-            showMessage("Not enough letters.");
         }
         return;
     } else if (currentGuess.length < numLetters && /^[a-z]$/i.test(key)) {
@@ -166,7 +163,7 @@ function submitGuess() {
         if (guessLetters[i] === secret[i]) {
             cell.classList.add("correct");
             guessHistory[currentRow][i] = "🟩";
-            keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+            let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
             keyboardKey.classList.add("green");
             secret[i] = null;
             guessLetters[i] = null;
@@ -182,12 +179,12 @@ function submitGuess() {
                 cell.classList.add("present");
                 guessHistory[currentRow][i] = "🟨";
                 secret[index] = null;
-                keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+                let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
                 keyboardKey.classList.add("yellow");
             } else {
                 cell.classList.add("absent");
                 guessHistory[currentRow][i] = "⬛";
-                keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
+                let keyboardKey = document.getElementById(`${cell.innerHTML}Key`);
                 keyboardKey.classList.add("gray");
             }
         }
