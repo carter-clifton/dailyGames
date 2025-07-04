@@ -1,18 +1,20 @@
+const maxAttempts = 6;
 const numLetters = 5;
-const secretWord = getTodaysWord();
-
 const resultsModal = new bootstrap.Modal(document.getElementById("results"));
 const aboutModal = new bootstrap.Modal(document.getElementById("about"));
 const resultsContainer = document.getElementById("resultsContainer");
 const infoButton = document.getElementById("infoButton");
 const statsButton = document.getElementById("statsButton");
 const copyResultsButton = document.getElementById("copyResultsButton");
+const secretWord = getTodaysWord();
 
 let gameState = "progress";
 
 let currentRow = 0;
 let currentGuess = "";
-let guessHistory = [[null,null,null,null,null]];
+let guessHistory = Array(maxAttempts).fill(null).map(() => Array(numLetters).fill(null));
+
+const grid = document.getElementById("grid");
 
 document.addEventListener('DOMContentLoaded', function () {
     statsButton.addEventListener("click", function() {
@@ -26,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function addEmptyRow() {
+for (let i = 0; i < maxAttempts; i++) {
     const row = document.createElement("div");
     row.classList.add("game-grid");
     for (let j = 0; j < numLetters; j++) {
@@ -35,53 +37,6 @@ function addEmptyRow() {
         row.appendChild(cell);
     }
     grid.appendChild(row);
-}
-
-addEmptyRow();
-
-function getTodaysWord(randomString = new Date().toDateString()) {
-    let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "-", "_", "+", "=", "[", "]", "{", "}", "|", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/"]
-    let rSeed = hashCode(randomString);
-    let rWord = Array(numLetters);
-    if (rSeed < 0) {
-        rSeed *= -1;
-    }
-    for (let i = 0; i < numLetters; i++) {
-        let digit = Math.floor(seededRandom(rSeed, 66)());
-        if (digit === 67) {
-            digit -= 1;
-        }
-        rWord[i] = digit;
-        rSeed *= 7549;
-    }
-    let word = "";
-    for (let i = 0; i < numLetters; i++) {
-        word += letters[rWord[i]];
-    }
-    return word;
-}
-
-function hashCode(string){
-    var hash = 0;
-    for (var i = 0; i < string.length; i++) {
-        var code = string.charCodeAt(i);
-        hash = ((hash<<5)-hash)+code;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
-}
-
-function seededRandom(seed, max = 1) {
-    let a = 1101655245;
-    let c = 85615;
-    let m = 2147483647;
-
-    seed = (seed % m + c) % m;
-
-    return function() {
-        seed = (seed * a + c) % m;
-        return seed / m * max;
-    }
 }
 
 const legalLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "-", "_", "+", "=", "[", "]", "{", "}", "|", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/"];
@@ -109,6 +64,51 @@ keyboardLayout.forEach((rowKeys, rowIndex) => {
     });
 });
 
+function getTodaysWord(randomString = new Date().toDateString()) {
+    let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "~", "-", "_", "+", "=", "[", "]", "{", "}", "|", ":", ";", "'", '"', "<", ">", ",", ".", "?", "/"]
+    let rSeed = hashCode(randomString);
+    let rWord = Array(numLetters);
+    if (rSeed < 0) {
+        rSeed *= -1;
+    }
+    for (let i = 0; i < numLetters; i++) {
+        let digit = Math.floor(seededRandom(rSeed, 66)());
+        if (digit === 67) {
+            digit -= 1;
+        }
+        rWord[i] = digit;
+        rSeed *= 7547;
+    }
+    let word = "";
+    for (let i = 0; i < numLetters; i++) {
+        word += letters[rWord[i]];
+    }
+    return word;
+}
+
+function hashCode(string){
+    var hash = 0;
+    for (var i = 0; i < string.length; i++) {
+        var code = string.charCodeAt(i);
+        hash = ((hash<<5)-hash)+code;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+function seededRandom(seed, max = 1) {
+    let a = 1103515245;
+    let c = 12345;
+    let m = 2147483647;
+
+    seed = (seed % m + c) % m;
+
+    return function() {
+        seed = (seed * a + c) % m;
+        return seed / m * max;
+    }
+}
+
 document.addEventListener("keypress", function onEvent(event) {
     let typedKey = event.key;
     if (legalLetters.includes(typedKey) || typedKey == "Enter") {
@@ -124,6 +124,10 @@ document.addEventListener("keydown", function onEvent(event) {
 });
 
 function handleKey(key) {
+
+    if (currentRow >= maxAttempts) {
+        return;
+    }
 
     if (key === "←") {
         currentGuess = currentGuess.slice(0, -1);
@@ -212,16 +216,22 @@ function submitGuess() {
     currentRow++;
     currentGuess = "";
 
-    guessHistory.push([null, null, null, null, null]);
-
-    addEmptyRow();
-
+    if (currentRow === maxAttempts) {
+        gameState = "fail";
+        showResults();
+    }
 }
 
 function showResults() {
     resultsContainer.innerHTML = "";
+    for (let i = 0; i < maxAttempts; i++) {
+        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">${guessHistory[i].join("")}</p>`;
+    }
     if (gameState == "win") {
-        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">You took ${guessHistory.length - 1} guess(es)</p>`;
+        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">${currentRow + 1} / 6 Guesses</p>`;
+    } else if (gameState == "fail") {
+        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">X / 6 Guesses</p>`;
+        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">The word was ${secretWord}.</p>`
     } else {
         resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">Keep trying to guess!</p>`;
     }
@@ -229,10 +239,20 @@ function showResults() {
 }
 
 function copyResults() {
-    if (gameState == "win") {
+    if (gameState == "win" || gameState == "fail") {
         let textToCopy = "";
-        textToCopy += `Hardle #${daysSinceStart()}\n`;
-        textToCopy += `${guessHistory.length - 1} Guess(es)`
+        textToCopy += `Hardle #${daysSinceStart()}\n`
+        if (gameState == "win") {
+            textToCopy += `${currentRow + 1} / 6 Guesses`;
+        } else {
+            textToCopy += "X / 6 Guesses";
+        }
+        for (let i = 0; i < maxAttempts; i++) {
+            let guessLine = "\n" + guessHistory[i].join("");
+            if (guessLine != "\n") {
+                textToCopy += guessLine;
+            }
+        }
         copyToClipboard(textToCopy);
     } else {
         return;
@@ -241,7 +261,7 @@ function copyResults() {
 
 function daysSinceStart() {
     const today = new Date();
-    const baseDate = new Date(2025, 7 - 1, 3 - 1);
+    const baseDate = new Date(2025, 6 - 1, 29 - 1);
     const timeDifference = today.getTime() - baseDate.getTime();
     const daysSince = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
     return daysSince;

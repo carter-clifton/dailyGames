@@ -21,3 +21,12 @@ body {
     width: auto;
     align-self: start;
 }
+
+.btn-red {
+    background-color: rgb(255,100,100);
+    margin-bottom: 1vh;
+}
+
+.btn-red:hover {
+    background-color: rgb(255,150,150);
+}
