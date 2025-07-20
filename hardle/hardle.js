@@ -221,7 +221,7 @@ function submitGuess() {
 function showResults() {
     resultsContainer.innerHTML = "";
     if (gameState == "win") {
-        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">You took ${guessHistory.length - 1} guess(es)</p>`;
+        resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">You took ${guessHistory.length} guess(es)</p>`;
     } else {
         resultsContainer.innerHTML += `<p style="margin:0; font-size:x-large">Keep trying to guess!</p>`;
     }
