@@ -1,32 +1,75 @@
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-#games {
-    flex: 1;
-}
-
 body {
-    display: flex;
-    flex-direction: column;
+    background-color: #0B132B;
 }
 
-.game-card img {
-    height: 200px;
-    object-fit: cover;
+.nav-link {
+    transition: color 0.3s ease, scale 0.3s ease;
 }
 
-.game-card .btn {
-    width: auto;
-    align-self: start;
+.nav-link:hover {
+    color: #305CDE !important;
+    scale: 1.1;
 }
 
-.btn-red {
-    background-color: rgb(255,100,100);
-    margin-bottom: 1vh;
+.name {
+    color: white;
+    position: relative;
+    display: inline-block;
+    transition: color 0.3s ease, scale 0.3s ease;
 }
 
-.btn-red:hover {
-    background-color: rgb(255,150,150);
+.name:hover {
+    scale: 1.1;
+}
+
+.name::after, .name::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #6495ED, #005A9C);
+    bottom: -5px;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s ease-out;
+}
+
+.name::before {
+    top: -1px;
+    transform-origin: left;
+}
+
+.name:hover::after, .name:hover::before {
+    transform: scaleX(1);
+}
+
+.card {
+    background-color: transparent !important;
+    border: 1px solid white;
+    color: white;
+    transition: scale 0.3s ease, border 0.3s ease;
+}
+
+.card:hover {
+    border: 1px solid #305CDE;
+    scale: 1.05;
+}
+
+.card a {
+    background-color: white;
+    color: #0B132B;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.card a:hover {
+    background-color: #305CDE;
+}
+
+.footer-text {
+    color: white;
+}
+
+.half-btn {
+    width: 40%;
 }
